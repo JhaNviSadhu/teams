@@ -1,115 +1,257 @@
+// import 'package:flutter/material.dart';
+// import 'package:teams/screens/dashboard.dart';
+// import 'package:teams/utils/colors.dart';
+
+import 'dart:math';
+
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ConfettiSample());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
 
-  // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       title: 'Flutter Demo',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//         scaffoldBackgroundColor: backgroundColor,
+//       ),
+//       home: const Dashboard(),
+//     );
+//   }
+// }
+
+class ConfettiSample extends StatelessWidget {
+  const ConfettiSample({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+        title: 'Confetti',
+        home: Scaffold(
+          backgroundColor: Colors.grey[900],
+          body: MyApp(),
+        ));
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class MyApp extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _MyAppState createState() => _MyAppState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _MyAppState extends State<MyApp> {
+  late ConfettiController _controllerCenter;
+  late ConfettiController _controllerCenterRight;
+  late ConfettiController _controllerCenterLeft;
+  late ConfettiController _controllerTopCenter;
+  late ConfettiController _controllerBottomCenter;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _controllerCenter =
+        ConfettiController(duration: const Duration(seconds: 2));
+    _controllerCenterRight =
+        ConfettiController(duration: const Duration(seconds: 2));
+    _controllerCenterLeft =
+        ConfettiController(duration: const Duration(seconds: 2));
+    _controllerTopCenter =
+        ConfettiController(duration: const Duration(seconds: 2));
+    _controllerBottomCenter =
+        ConfettiController(duration: const Duration(seconds: 2));
+  }
+
+  @override
+  void dispose() {
+    _controllerCenter.dispose();
+    _controllerCenterRight.dispose();
+    _controllerCenterLeft.dispose();
+    _controllerTopCenter.dispose();
+    _controllerBottomCenter.dispose();
+    super.dispose();
+  }
+
+  /// A custom Path to paint stars.
+  Path drawStar(Size size) {
+    // Method to convert degree to radians
+    double degToRad(double deg) => deg * (pi / 180.0);
+
+    const numberOfPoints = 5;
+    final halfWidth = size.width / 2;
+    final externalRadius = halfWidth;
+    final internalRadius = halfWidth / 2.5;
+    final degreesPerStep = degToRad(360 / numberOfPoints);
+    final halfDegreesPerStep = degreesPerStep / 2;
+    final path = Path();
+    final fullAngle = degToRad(360);
+    path.moveTo(size.width, halfWidth);
+
+    for (double step = 0; step < fullAngle; step += degreesPerStep) {
+      path.lineTo(halfWidth + externalRadius * cos(step),
+          halfWidth + externalRadius * sin(step));
+      path.lineTo(halfWidth + internalRadius * cos(step + halfDegreesPerStep),
+          halfWidth + internalRadius * sin(step + halfDegreesPerStep));
+    }
+    path.close();
+    return path;
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+    return SafeArea(
+      child: Stack(
+        children: <Widget>[
+          //CENTER -- Blast
+          Align(
+            alignment: Alignment.center,
+            child: ConfettiWidget(
+              confettiController: _controllerCenter,
+              blastDirectionality: BlastDirectionality
+                  .explosive, // don't specify a direction, blast randomly
+              // shouldLoop:
+              //     true, // start again as soon as the animation is finished
+              colors: const [
+                Colors.green,
+                Colors.blue,
+                Colors.pink,
+                Colors.orange,
+                Colors.purple
+              ], // manually specify the colors to be used
+              createParticlePath: drawStar, // define a custom shape/path.
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: TextButton(
+                onPressed: () {
+                  _controllerCenter.play();
+                },
+                child: _display('blast\nstars')),
+          ),
+
+          //CENTER RIGHT -- Emit left
+          Align(
+            alignment: Alignment.centerRight,
+            child: ConfettiWidget(
+              confettiController: _controllerCenterRight,
+              blastDirection: pi, // radial value - LEFT
+              particleDrag: 0.05, // apply drag to the confetti
+              emissionFrequency: 0.05, // how often it should emit
+              numberOfParticles: 20, // number of particles to emit
+              gravity: 0.05, // gravity - or fall speed
+              shouldLoop: false,
+              colors: const [
+                Colors.green,
+                Colors.blue,
+                Colors.pink
+              ], // manually specify the colors to be used
+              strokeWidth: 1,
+              strokeColor: Colors.white,
             ),
-          ],
-        ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+                onPressed: () {
+                  _controllerCenterRight.play();
+                },
+                child: _display('pump left')),
+          ),
+
+          //CENTER LEFT - Emit right
+          Align(
+            alignment: Alignment.centerLeft,
+            child: ConfettiWidget(
+              confettiController: _controllerCenterLeft,
+              blastDirection: 0, // radial value - RIGHT
+              emissionFrequency: 0.6,
+              minimumSize: const Size(10,
+                  10), // set the minimum potential size for the confetti (width, height)
+              maximumSize: const Size(50,
+                  50), // set the maximum potential size for the confetti (width, height)
+              numberOfParticles: 1,
+              gravity: 0.1,
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+                onPressed: () {
+                  _controllerCenterLeft.play();
+                },
+                child: _display('singles')),
+          ),
+
+          //TOP CENTER - shoot down
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _controllerTopCenter,
+              blastDirection: pi / 2,
+              maxBlastForce: 5, // set a lower max blast force
+              minBlastForce: 2, // set a lower min blast force
+              emissionFrequency: 0.05,
+              numberOfParticles: 10, // a lot of particles at once
+              gravity: 0.6,
+            ),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: TextButton(
+                onPressed: () {
+                  _controllerTopCenter.play();
+                },
+                child: _display('goliath')),
+          ),
+          //BOTTOM CENTER
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: ConfettiWidget(
+              createParticlePath: (size) {
+                final path = Path();
+                path.addOval(
+                  Rect.fromCircle(
+                    center: Offset.zero,
+                    radius: 10,
+                  ),
+                );
+                return path;
+              },
+              confettiController: _controllerBottomCenter,
+              blastDirection: -pi / 2,
+              blastDirectionality: BlastDirectionality.explosive,
+              emissionFrequency: 0.0,
+              numberOfParticles: 40,
+              maxBlastForce: 100,
+              minBlastForce: 20,
+              gravity: 0.3,
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: TextButton(
+                onPressed: () {
+                  _controllerBottomCenter.play();
+                },
+                child: _display('hard and infrequent')),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Text _display(String text) {
+    return Text(
+      text,
+      style: const TextStyle(color: Colors.white, fontSize: 20),
     );
   }
 }
